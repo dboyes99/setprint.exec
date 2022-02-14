@@ -17,16 +17,8 @@
 * First PRINTERS NAMES in the CMS search order is used (allows for
 * private printers not known to the unwashed masses).
 *
- 
-:printer.PRT1
-  :desc.HP Officejet 8600
-  :location.Near EMZ desk
-  :controller.RSCS
-  :node.ANTIQUE
-  :device.PRT1
-  :tags.50
-  :defform.STANDARD
- 
+* Example:
+*
 :printer.VA3P3
   :desc.HP Officejet 8600 via RSCS LPR support
   :location.Near EMZ desk
@@ -35,23 +27,4 @@
   :device.VA3P3
   :tags.50
   :defform.STANDARD
- 
-:printer.PRT2
-  :desc.HP Officejet 8600
-  :location.ANTIQUE Office
-  :controller.RSCS
-  :node.ANTIQUE
-  :device.PRT2
-  :tags.50
-  :defform.STANDARD
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
