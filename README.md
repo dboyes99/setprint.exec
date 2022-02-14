@@ -1,14 +1,14 @@
 # SETPRINT EXEC
 z/VM CMS tool for selecting print destinations by name.  
 
-SETPRINT EXEC
+# SETPRINT EXEC
  
-Brief Summary of Statement:
+## Brief Summary of Statement:
  
  SETPRINT allows selecting which printer to use when generating CMS
  output.
  
-Use the SETPRINT command to:
+## Use the SETPRINT command to:
  
  SETPRINT allows selecting which printer to use when generating CMS
  output. Since actual line printers are somewhat scarce in the modern
@@ -16,11 +16,11 @@ Use the SETPRINT command to:
  machine instead of CP, the printers are selected by a combination of
  tags in the file PRINTERS NAMES.
 
-The format of the SETPRINT command is:
+## The format of the SETPRINT command is:
  
  >>--SETPRINT----DEST--destination-----------------------------------><
  
-Operands
+## Operands
  
 DEST
      indicates the user is selecting where printed output is to be
@@ -31,7 +31,7 @@ destination
      defines the combination of RSCS options used when output is
      generated.
  
-How to Specify
+## How to Specify
  
  SETPRINT assumes that all printers on a system are driven by virtual
  machines, generally RSCS. The available printers on your system are
@@ -44,7 +44,7 @@ How to Specify
  calling it in PROFILE EXEC), to set the initial default printer for
  that CMS session.
  
-Usage Notes
+## Usage Notes
  
    1.  Printers are defined to SETPRINT by means of the file PRINTERS
        NAMES on any accessed disk. The file is a NAMES format file as
@@ -208,7 +208,7 @@ Usage Notes
    5.  LPR or 3270P links specified in PRINTERS NAMES must be defined
        to RSCS to operate properly.
  
-Examples
+## Examples
  
    1.  To select printer YAYA listed in PRINTERS NAMES, specify:
  
