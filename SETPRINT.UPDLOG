@@ -1,0 +1,241 @@
+1Updating SETPRINT $EXEC    A1 with SETPRINT TEMPLATE A1                Update Log -- Page      1
+0        ./ R 00001000          $ 1990 990                     09/17/20 15:05:49                 
+ Deleting ...    /* REXX */                                                              00001000
+ Inserting ...   /* REXX */                                                              00001990
+                 /*********************************************************************/ 00002980
+                 /*********************************************************************/ 00003970
+                 /* $$BASE   EXEC: <purpose>                                          */ 00004960
+                 /*                <description>                                      */ 00005950
+                 /*                                                                   */ 00006940
+                 /*      Author  : David Boyes                                        */ 00007930
+                 /*     License  : BSD                                                */ 00008920
+                 /*********************************************************************/ 00009910
+                 /*********************************************************************/ 00010900
+                 /* Maintenance Log                                                   */ 00011890
+                 /* Date         Initials                 Description                 */ 00012880
+                 /* ------------------------------------------------------------------*/ 00013870
+                 /* <date>        DB             Created exec                         */ 00014860
+                 /*                                                                   */ 00015850
+                 /*********************************************************************/ 00016840
+                 /**** Begin Main Program                                          ****/ 00017830
+                 /*********************************************************************/ 00018820
+1Updating SETPRINT $EXEC    A1 with SETPRINT METADATA A1                Update Log -- Page      2
+0        ./ R 00004960 00005950 $ 5550 590                     01/04/21 14:52:17                 
+ Deleting ...    /* $$BASE   EXEC: <purpose>                                          */ 00004960
+                 /*                <description>                                      */ 00005950
+ Inserting ...   /* SETPRINT EXEC: Select printer for output                          */ 00005550
+                 /*                                                                   */ 00006140
+         ./ R 00007930 00008920 $ 8520 590                     01/04/21 14:52:17                 
+ Deleting ...    /*      Author  : David Boyes                                        */ 00007930
+                 /*     License  : BSD                                                */ 00008920
+ Inserting ...   /*      Author  : DB                                                 */ 00008520
+                 /*     License  : BSD                                                */ 00009110
+         ./ R 00013870 00014860 $ 14760 890                    01/04/21 14:52:17                 
+ Deleting ...    /* ------------------------------------------------------------------*/ 00013870
+                 /* <date>        DB             Created exec                         */ 00014860
+ Inserting ...   /* 2021-01-04    DB             Created new version of old util      */ 00014760
+1Updating SETPRINT $EXEC    A1 with SETPRINT INITIAL  A1                Update Log -- Page      3
+0        ./ R 00005550          $ 5740 190                     01/04/21 17:20:31                 
+ Deleting ...    /* SETPRINT EXEC: Select printer for output                          */ 00005550
+ Inserting ...   /* SETPRINT EXEC: Select printer for output from PRINTERS NAMES      */ 00005740
+         ./ I 00018820          $ 19820 1000                   01/04/21 17:20:31                 
+ Inserting ...   call Set_Defaults                     /* some useful default values  */ 00019820
+                 arg verb printer '(' opts             /* parse command line          */ 00020820
+                 if pos('DEBUG', opts) /= 0 then trace ?i                    /* trace */ 00021820
+                 call Check_Verb verb                  /* check for implemented verb  */ 00022820
+                 call Check_Printer printer            /* is printer defined?         */ 00023820
+                 call Spool_Device                     /* do it                       */ 00024820
+                 exit rc                               /* end program                 */ 00025820
+                                                                                         00026820
+                 /*********************************************************************/ 00027820
+                 /**** Begin Subroutines                                           ****/ 00028820
+                 /*********************************************************************/ 00029820
+                                                                                         00030820
+                 /*********************************************************************/ 00031820
+                 /**** Set_defaults Last updated: 2021-01-04                       ****/ 00032820
+                 /*********************************************************************/ 00033820
+                 Set_Defaults:                                                           00034820
+                  RC_OK = 0                            /* this is OK return code      */ 00035820
+                  RC_WARN = 4                          /* warning                     */ 00036820
+                  RC_ERR = 8                           /* error                       */ 00037820
+                  RC_SEVERR = 16                       /* severe error                */ 00038820
+                  RC_FATAL = 99                        /* fatal error                 */ 00039820
+                  RC_NOTFOUND = 28                     /* not found                   */ 00040820
+                 return rc                             /* exit routine                */ 00041820
+                                                                                         00042820
+                                                                                         00043820
+                 /*********************************************************************/ 00044820
+                 /**** Check_Verb   Last updated: 2021-01-04                       ****/ 00045820
+                 /*********************************************************************/ 00046820
+                 Check_Verb:                                                             00047820
+                  parse arg verb                       /* get value to test           */ 00048820
+                  upper verb                           /* fewer options to test       */ 00049820
+                  select                               /* one of these?               */ 00050820
+                    when verb = 'DEST' then do         /* DEST verb valid             */ 00051820
+                      return RC_OK                     /* Valid                       */ 00052820
+                    end                                /* End DEST                    */ 00053820
+                    otherwise do                       /* not implemeted              */ 00054820
+                       say verb 'not implented. Aborting.'                               00055820
+                       return RC_FATAL                 /* and bomb                    */ 00056820
+                    end                                /* otherwise                   */ 00057820
+                  end                                  /* select                      */ 00058820
+                 return rc                             /* formality, but good form    */ 00059820
+                                                                                         00060820
+                 /*********************************************************************/ 00061820
+                 /**** Check_Printer Last updated:2021-01-04                       ****/ 00062820
+                 /*********************************************************************/ 00063820
+                 Check_Printer:                                                          00064820
+                  parse arg printer                    /* get desired printer         */ 00065820
+                  upper printer                        /* RSCS prefers upper case     */ 00066820
+                  'NAMEFIND :printer' printer ,        /* look it up                  */ 00067820
+1Updating SETPRINT $EXEC    A1 with SETPRINT INITIAL  A1                Update Log -- Page      4
+0                    ':controller :node ',                                               00068820
+                     ':device :tags ' ,                                                  00069820
+                     ':defform :defclass' ,                                              00070820
+                     ':defdist' ,                                                        00071820
+                     '( BREAKTAG :printer' ,                                             00072820
+                     'STEM result. ' ,                                                   00073820
+                     'FILE PRINTERS'                   /* in file PRINTERS NAMES      */ 00074820
+                  controller = result.1                /* machine to spool to         */ 00075820
+                  node = result.2                      /* what node has the printer   */ 00076820
+                  device = result.3                    /* what linkid/dev             */ 00077820
+                  tags = result.4                      /* special tag values          */ 00078820
+                  form = result.5                      /* default form                */ 00079820
+                  class = result.6                     /* default class               */ 00080820
+                  dist = result.7                      /* default dist                */ 00081820
+                                                                                         00082820
+                  if rc = RC_OK then return RC_OK      /* all is well                 */ 00083820
+                  if rc = RC_NOTFOUND then return ,    /* return not found            */ 00084820
+                     RC_NOTFOUND                                                         00085820
+                 return rc                             /* formal end                  */ 00086820
+                                                                                         00087820
+                                                                                         00088820
+                 /*********************************************************************/ 00089820
+                 /**** Spool_Device Last updated: 2021-01-04                       ****/ 00090820
+                 /*********************************************************************/ 00091820
+                 Spool_Device:                                                           00092820
+                    if   controller /= '' then do    /* printer is controlled by a VM */ 00093820
+                      'CP SPOOL PRT TO' controller                                       00094820
+                    end                                                                  00095820
+                    if   node /= '' then do            /* on a NJE node               */ 00096820
+                      'CP TAG DEV PRT' node device                                       00097820
+                    end                                                                  00098820
+                    if   tags /= '' then do            /* needs tag priority          */ 00099820
+                      'CP TAG DEV PRT' node device tags                                  00100820
+                    end                                                                  00101820
+                    if   form /= '' then do            /* has a default form          */ 00102820
+                      'CP TAG DEV PRT' node device ,                                     00103820
+                          tags 'FORM' form                                               00104820
+                    end                                                                  00105820
+                    if   class /= '' then do           /* has a default class         */ 00106820
+                      'CP SPOOL PRT CLASS' class                                         00107820
+                    end                                                                  00108820
+                    if   dist /= '' then do            /* has a default dist          */ 00109820
+                      'CP SPOOL PRT DIST' dist                                           00110820
+                    end                                                                  00111820
+                 return rc                             /* exit                        */ 00112820
+                                                                                         00113820
+                                                                                         00114820
+                                                                                         00115820
+                                                                                         00116820
+                                                                                         00117820
+                                                                                         00118820
+                                                                                         00119820
+                                                                                         00120820
+1Updating SETPRINT $EXEC    A1 with SETPRINT INITIAL  A1                Update Log -- Page      5
+0                                                                                        00121820
+                                                                                         00122820
+                                                                                         00123820
+                                                                                         00124820
+1Updating SETPRINT $EXEC    A1 with SETPRINT DESC     A1                Update Log -- Page      6
+0        ./ *                                                                                    
+         ./ R 00025820          $ 26110 290                    02/22/21 17:09:43                 
+ Deleting ...    exit rc                               /* end program                 */ 00025820
+ Inserting ...   call Say_New_Output_Location          /* confirm what we did         */ 00026110
+                 exit rc                               /* end program                 */ 00026400
+         ./ R 00071820          $ 72310 490                    02/22/21 17:09:43                 
+ Deleting ...        ':defdist' ,                                                        00071820
+ Inserting ...       ':defdist :desc' ,                                                  00072310
+         ./ R 00082820          $ 83010 190                    02/22/21 17:09:43                 
+ Deleting ...                                                                            00082820
+ Inserting ...    desc = result.8                      /* printer desc                */ 00083010
+                  if desc = '' then desc = 'Hidden Printer Type/Location'                00083200
+                                                                                         00083390
+         ./ R 00114820 00116820 $ 115110 290                   02/22/21 17:09:43                 
+ Deleting ...                                                                            00114820
+                                                                                         00115820
+                                                                                         00116820
+ Inserting ...   /*********************************************************************/ 00115110
+                 /**** Say_New_Output_Location    2021-01-04                       ****/ 00115400
+                 /*********************************************************************/ 00115690
+                 Say_New_Output_Location:                                                00115980
+                                                                                         00116270
+                 say "Output will be printed on:" printer                                00116560
+                 say "Description:" desc                                                 00116850
+                                                                                         00117140
+                 return RC_OK                                                            00117430
+1Updating SETPRINT $EXEC    A1 with SETPRINT SHOWLOC  A1                Update Log -- Page      7
+0        ./ *                                                                                    
+         ./ R 00015850          $ 16140 290                    03/03/21 15:17:48                 
+ Deleting ...    /*                                                                   */ 00015850
+ Inserting ...   /* 2021-03-03    DB             Added :location and :notes. tag      */ 00016140
+                 /*                                                                   */ 00016430
+         ./ I 00019820          $ 20320 500                    03/03/21 15:17:48                 
+ Inserting ...   call Set_Variables                    /* configuration vars          */ 00020320
+         ./ R 00032820          $ 33310 490                    03/03/21 15:17:48                 
+ Deleting ...    /**** Set_defaults Last updated: 2021-01-04                       ****/ 00032820
+ Inserting ...   /**** Set_defaults                    2021-01-04      SETDEF      ****/ 00033310
+         ./ I 00042820          $ 42920 100                    03/03/21 15:17:48                 
+ Inserting ...   /*********************************************************************/ 00042920
+                 /**** Set_Variables                   2021-03-03      SETVAR      ****/ 00043020
+                 /*********************************************************************/ 00043120
+                 Set_Variables:                                                          00043220
+                   Have_SUPERSAY = 1                   /* is SUPERSAY installed?      */ 00043320
+                 return RC_OK                          /* exit routine                */ 00043420
+         ./ R 00045820          $ 46310 490                    03/03/21 15:17:48                 
+ Deleting ...    /**** Check_Verb   Last updated: 2021-01-04                       ****/ 00045820
+ Inserting ...   /**** Check_Verb                      2021-01-04      CHKVRB      ****/ 00046310
+         ./ R 00062820          $ 63310 490                    03/03/21 15:17:48                 
+ Deleting ...    /**** Check_Printer Last updated:2021-01-04                       ****/ 00062820
+ Inserting ...   /**** Check_Printer                   2021-01-04      CHKPRT      ****/ 00063310
+         ./ I 00072310          $ 72510 200                    03/03/21 15:17:48                 
+ Inserting ...       ':location :notes' ,                                                00072510
+         ./ I 00083010          $ 83050 40                     03/03/21 15:17:48                 
+ Inserting ...    location = result.9                  /* physical location           */ 00083050
+                  notes = result.10                    /* any special notes           */ 00083090
+                                                                                         00083130
+         ./ R 00090820          $ 91310 490                    03/03/21 15:17:48                 
+ Deleting ...    /**** Spool_Device Last updated: 2021-01-04                       ****/ 00090820
+ Inserting ...   /**** Spool_Device                     2021-01-04    SPLDEV       ****/ 00091310
+         ./ R 00115400          $ 115490 90                    03/03/21 15:17:48                 
+ Deleting ...    /**** Say_New_Output_Location    2021-01-04                       ****/ 00115400
+ Inserting ...   /**** Say_New_Output_Location          2021-03-03    SNOL         ****/ 00115490
+         ./ I 00116270          $ 116290 20                    03/03/21 15:17:48                 
+ Inserting ...   if Have_SUPERSAY = 1 then do          /* make it look nice           */ 00116290
+                    msg = "Output will be printed on:" printer                           00116310
+                    call SUPERSAY msg ,"YELLOW", 80                                      00116330
+                    msg = "Description:" desc                                            00116350
+                    call SUPERSAY msg , "GREEN", 80                                      00116370
+                    msg = "Location   :" location                                        00116390
+                    call SUPERSAY msg , "GREEN", 80                                      00116410
+                    if notes ^= '' then do                                               00116430
+                       msg = "ATTN:" notes                                               00116450
+                       call SUPERSAY msg , "YELLOW" , 80                                 00116470
+                    end                                /* if notes                    */ 00116490
+                 end                                   /* if have_SUPERSAY            */ 00116510
+                 else do                               /* boring                      */ 00116530
+         ./ R 00117140          $ 117180 40                    03/03/21 15:17:48                 
+ Deleting ...                                                                            00117140
+ Inserting ...   say "Location:   " location                                             00117180
+                 if notes ^= '' then say "ATTN:" notes                                   00117220
+1Updating SETPRINT $EXEC    A1 with SETPRINT SHOWLOC  A1                Update Log -- Page      8
+0                end                                   /* else boring                 */ 00117260
+                                                                                         00117300
+1Updating SETPRINT $EXEC    A1 with SETPRINT LINEUP   A1                Update Log -- Page      9
+0        ./ R 00016430          $ 16520 90                     11/11/21 17:36:20                 
+ Deleting ...    /*                                                                   */ 00016430
+ Inserting ...   /* 2021-11-11    DB             Line up output                       */ 00016520
+                 /*                                                                   */ 00016610
+         ./ R 00117180          $ 117190 10                    11/11/21 17:36:20                 
+ Deleting ...    say "Location:   " location                                             00117180
+ Inserting ...   say "Location   :" location                                             00117190

@@ -1,0 +1,4 @@
+* EXECUPDT control file for <tool>                                              
+TEXT MACS CMSLIB                                                                
+V1   001  AUX                                                                   
+TMP  000  AUX                                                                   

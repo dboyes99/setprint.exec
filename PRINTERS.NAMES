@@ -1,0 +1,57 @@
+* PRINTERS NAMES - defines printers available to access from VM
+* via the SETPRINT exec.
+* Entries in this file are in NAMES file format (see CMS Commands
+* and Utilities manual under NAMEFIND. Valid tags are:
+*
+* :printer.<human friendly nickname>
+* :desc.<text description of printer>
+* :location.<physical location of printer>
+* :controller.<name of RSCS or other machine supervising printing>
+* :node.<RSCS node name owning printer>
+* :device.<RSCS link name for printer device>
+* :tags.<tag priority for printer jobs>
+* :defform.<default form for jobs>
+* :defclass.<default class of print job>
+* :defdist.<default distribution code for jobs>
+*
+* First PRINTERS NAMES in the CMS search order is used (allows for
+* private printers not known to the unwashed masses).
+*
+ 
+:printer.PRT1
+  :desc.HP Officejet 8600
+  :location.Near EMZ desk
+  :controller.RSCS
+  :node.ANTIQUE
+  :device.PRT1
+  :tags.50
+  :defform.STANDARD
+ 
+:printer.VA3P3
+  :desc.HP Officejet 8600 via RSCS LPR support
+  :location.Near EMZ desk
+  :controller.RSCS
+  :node.SNAVM4
+  :device.VA3P3
+  :tags.50
+  :defform.STANDARD
+ 
+:printer.PRT2
+  :desc.HP Officejet 8600
+  :location.ANTIQUE Office
+  :controller.RSCS
+  :node.ANTIQUE
+  :device.PRT2
+  :tags.50
+  :defform.STANDARD
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

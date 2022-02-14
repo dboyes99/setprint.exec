@@ -1,0 +1,20 @@
+./ *                                                                            
+./ R 00025820          $ 26110 290                    02/22/21 17:09:43         
+call Say_New_Output_Location          /* confirm what we did         */         
+exit rc                               /* end program                 */ 00025820
+./ R 00071820          $ 72310 490                    02/22/21 17:09:43         
+    ':defdist :desc' ,                                                  00071820
+./ R 00082820          $ 83010 190                    02/22/21 17:09:43         
+ desc = result.8                      /* printer desc                */ 00082820
+ if desc = '' then desc = 'Hidden Printer Type/Location'                        
+                                                                                
+./ R 00114820 00116820 $ 115110 290                   02/22/21 17:09:43         
+/*********************************************************************/ 00044820
+/**** Say_New_Output_Location    2021-01-04                       ****/ 00045820
+/*********************************************************************/ 00046820
+Say_New_Output_Location:                                                        
+                                                                                
+say "Output will be printed on:" printer                                00114820
+say "Description:" desc                                                 00115820
+                                                                                
+return RC_OK                                                            00116820

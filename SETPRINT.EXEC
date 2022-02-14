@@ -1,0 +1,161 @@
+/* REXX */
+/*********************************************************************/
+/*********************************************************************/
+/* SETPRINT EXEC: Select printer for output from PRINTERS NAMES      */
+/*                                                                   */
+/*                                                                   */
+/*      Author  : DB                                                 */
+/*     License  : BSD                                                */
+/*********************************************************************/
+/*********************************************************************/
+/* Maintenance Log                                                   */
+/* Date         Initials                 Description                 */
+/* 2021-01-04    DB             Created new version of old util      */
+/* 2021-03-03    DB             Added :location and :notes. tag      */
+/* 2021-11-11    DB             Line up output                       */
+/*                                                                   */
+/*********************************************************************/
+/**** Begin Main Program                                          ****/
+/*********************************************************************/
+call Set_Defaults                     /* some useful default values  */
+call Set_Variables                    /* configuration vars          */
+arg verb printer '(' opts             /* parse command line          */
+if pos('DEBUG', opts) /= 0 then trace ?i                    /* trace */
+call Check_Verb verb                  /* check for implemented verb  */
+call Check_Printer printer            /* is printer defined?         */
+call Spool_Device                     /* do it                       */
+call Say_New_Output_Location          /* confirm what we did         */
+exit rc                               /* end program                 */
+ 
+/*********************************************************************/
+/**** Begin Subroutines                                           ****/
+/*********************************************************************/
+ 
+/*********************************************************************/
+/**** Set_defaults                    2021-01-04      SETDEF      ****/
+/*********************************************************************/
+Set_Defaults:
+ RC_OK = 0                            /* this is OK return code      */
+ RC_WARN = 4                          /* warning                     */
+ RC_ERR = 8                           /* error                       */
+ RC_SEVERR = 16                       /* severe error                */
+ RC_FATAL = 99                        /* fatal error                 */
+ RC_NOTFOUND = 28                     /* not found                   */
+return rc                             /* exit routine                */
+ 
+/*********************************************************************/
+/**** Set_Variables                   2021-03-03      SETVAR      ****/
+/*********************************************************************/
+Set_Variables:
+  Have_SUPERSAY = 0                   /* is SUPERSAY installed?      */
+return RC_OK                          /* exit routine                */
+ 
+/*********************************************************************/
+/**** Check_Verb                      2021-01-04      CHKVRB      ****/
+/*********************************************************************/
+Check_Verb:
+ parse arg verb                       /* get value to test           */
+ upper verb                           /* fewer options to test       */
+ select                               /* one of these?               */
+   when verb = 'DEST' then do         /* DEST verb valid             */
+     return RC_OK                     /* Valid                       */
+   end                                /* End DEST                    */
+   otherwise do                       /* not implemeted              */
+      say verb 'not implented. Aborting.'
+      return RC_FATAL                 /* and bomb                    */
+   end                                /* otherwise                   */
+ end                                  /* select                      */
+return rc                             /* formality, but good form    */
+ 
+/*********************************************************************/
+/**** Check_Printer                   2021-01-04      CHKPRT      ****/
+/*********************************************************************/
+Check_Printer:
+ parse arg printer                    /* get desired printer         */
+ upper printer                        /* RSCS prefers upper case     */
+ 'NAMEFIND :printer' printer ,        /* look it up                  */
+    ':controller :node ',
+    ':device :tags ' ,
+    ':defform :defclass' ,
+    ':defdist :desc' ,
+    ':location :notes' ,
+    '( BREAKTAG :printer' ,
+    'STEM result. ' ,
+    'FILE PRINTERS'                   /* in file PRINTERS NAMES      */
+ controller = result.1                /* machine to spool to         */
+ node = result.2                      /* what node has the printer   */
+ device = result.3                    /* what linkid/dev             */
+ tags = result.4                      /* special tag values          */
+ form = result.5                      /* default form                */
+ class = result.6                     /* default class               */
+ dist = result.7                      /* default dist                */
+ desc = result.8                      /* printer desc                */
+ location = result.9                  /* physical location           */
+ notes = result.10                    /* any special notes           */
+ 
+ if desc = '' then desc = 'Hidden Printer Type/Location'
+ 
+ if rc = RC_OK then return RC_OK      /* all is well                 */
+ if rc = RC_NOTFOUND then return ,    /* return not found            */
+    RC_NOTFOUND
+return rc                             /* formal end                  */
+ 
+ 
+/*********************************************************************/
+/**** Spool_Device                     2021-01-04    SPLDEV       ****/
+/*********************************************************************/
+Spool_Device:
+   if   controller /= '' then do    /* printer is controlled by a VM */
+     'CP SPOOL PRT TO' controller
+   end
+   if   node /= '' then do            /* on a NJE node               */
+     'CP TAG DEV PRT' node device
+   end
+   if   tags /= '' then do            /* needs tag priority          */
+     'CP TAG DEV PRT' node device tags
+   end
+   if   form /= '' then do            /* has a default form          */
+     'CP TAG DEV PRT' node device ,
+         tags 'FORM' form
+   end
+   if   class /= '' then do           /* has a default class         */
+     'CP SPOOL PRT CLASS' class
+   end
+   if   dist /= '' then do            /* has a default dist          */
+     'CP SPOOL PRT DIST' dist
+   end
+return rc                             /* exit                        */
+ 
+/*********************************************************************/
+/**** Say_New_Output_Location          2021-03-03    SNOL         ****/
+/*********************************************************************/
+Say_New_Output_Location:
+ 
+if Have_SUPERSAY = 1 then do          /* make it look nice           */
+   msg = "Output will be printed on:" printer
+   call SUPERSAY msg ,"YELLOW", 80
+   msg = "Description:" desc
+   call SUPERSAY msg , "GREEN", 80
+   msg = "Location   :" location
+   call SUPERSAY msg , "GREEN", 80
+   if notes ^= '' then do
+      msg = "ATTN:" notes
+      call SUPERSAY msg , "YELLOW" , 80
+   end                                /* if notes                    */
+end                                   /* if have_SUPERSAY            */
+else do                               /* boring                      */
+say "Output will be printed on:" printer
+say "Description:" desc
+say "Location   :" location
+if notes ^= '' then say "ATTN:" notes
+end                                   /* else boring                 */
+ 
+return RC_OK
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

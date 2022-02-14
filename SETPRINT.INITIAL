@@ -1,0 +1,109 @@
+./ R 00005550          $ 5740 190                     01/04/21 17:20:31         
+/* SETPRINT EXEC: Select printer for output from PRINTERS NAMES      */ 00005740
+./ I 00018820          $ 19820 1000                   01/04/21 17:20:31         
+call Set_Defaults                     /* some useful default values  */ 00019820
+arg verb printer '(' opts             /* parse command line          */ 00020820
+if pos('DEBUG', opts) /= 0 then trace ?i                    /* trace */ 00021820
+call Check_Verb verb                  /* check for implemented verb  */ 00022820
+call Check_Printer printer            /* is printer defined?         */ 00023820
+call Spool_Device                     /* do it                       */ 00024820
+exit rc                               /* end program                 */ 00025820
+                                                                        00026820
+/*********************************************************************/ 00027820
+/**** Begin Subroutines                                           ****/ 00028820
+/*********************************************************************/ 00029820
+                                                                        00030820
+/*********************************************************************/ 00031820
+/**** Set_defaults Last updated: 2021-01-04                       ****/ 00032820
+/*********************************************************************/ 00033820
+Set_Defaults:                                                           00034820
+ RC_OK = 0                            /* this is OK return code      */ 00035820
+ RC_WARN = 4                          /* warning                     */ 00036820
+ RC_ERR = 8                           /* error                       */ 00037820
+ RC_SEVERR = 16                       /* severe error                */ 00038820
+ RC_FATAL = 99                        /* fatal error                 */ 00039820
+ RC_NOTFOUND = 28                     /* not found                   */ 00040820
+return rc                             /* exit routine                */ 00041820
+                                                                        00042820
+                                                                        00043820
+/*********************************************************************/ 00044820
+/**** Check_Verb   Last updated: 2021-01-04                       ****/ 00045820
+/*********************************************************************/ 00046820
+Check_Verb:                                                             00047820
+ parse arg verb                       /* get value to test           */ 00048820
+ upper verb                           /* fewer options to test       */ 00049820
+ select                               /* one of these?               */ 00050820
+   when verb = 'DEST' then do         /* DEST verb valid             */ 00051820
+     return RC_OK                     /* Valid                       */ 00052820
+   end                                /* End DEST                    */ 00053820
+   otherwise do                       /* not implemeted              */ 00054820
+      say verb 'not implented. Aborting.'                               00055820
+      return RC_FATAL                 /* and bomb                    */ 00056820
+   end                                /* otherwise                   */ 00057820
+ end                                  /* select                      */ 00058820
+return rc                             /* formality, but good form    */ 00059820
+                                                                        00060820
+/*********************************************************************/ 00061820
+/**** Check_Printer Last updated:2021-01-04                       ****/ 00062820
+/*********************************************************************/ 00063820
+Check_Printer:                                                          00064820
+ parse arg printer                    /* get desired printer         */ 00065820
+ upper printer                        /* RSCS prefers upper case     */ 00066820
+ 'NAMEFIND :printer' printer ,        /* look it up                  */ 00067820
+    ':controller :node ',                                               00068820
+    ':device :tags ' ,                                                  00069820
+    ':defform :defclass' ,                                              00070820
+    ':defdist' ,                                                        00071820
+    '( BREAKTAG :printer' ,                                             00072820
+    'STEM result. ' ,                                                   00073820
+    'FILE PRINTERS'                   /* in file PRINTERS NAMES      */ 00074820
+ controller = result.1                /* machine to spool to         */ 00075820
+ node = result.2                      /* what node has the printer   */ 00076820
+ device = result.3                    /* what linkid/dev             */ 00077820
+ tags = result.4                      /* special tag values          */ 00078820
+ form = result.5                      /* default form                */ 00079820
+ class = result.6                     /* default class               */ 00080820
+ dist = result.7                      /* default dist                */ 00081820
+                                                                        00082820
+ if rc = RC_OK then return RC_OK      /* all is well                 */ 00083820
+ if rc = RC_NOTFOUND then return ,    /* return not found            */ 00084820
+    RC_NOTFOUND                                                         00085820
+return rc                             /* formal end                  */ 00086820
+                                                                        00087820
+                                                                        00088820
+/*********************************************************************/ 00089820
+/**** Spool_Device Last updated: 2021-01-04                       ****/ 00090820
+/*********************************************************************/ 00091820
+Spool_Device:                                                           00092820
+   if   controller /= '' then do    /* printer is controlled by a VM */ 00094820
+     'CP SPOOL PRT TO' controller                                       00095820
+   end                                                                  00096820
+   if   node /= '' then do            /* on a NJE node               */ 00097820
+     'CP TAG DEV PRT' node device                                       00098820
+   end                                                                  00099820
+   if   tags /= '' then do            /* needs tag priority          */ 00100820
+     'CP TAG DEV PRT' node device tags                                  00101820
+   end                                                                  00102820
+   if   form /= '' then do            /* has a default form          */ 00103820
+     'CP TAG DEV PRT' node device ,                                     00104820
+         tags 'FORM' form                                               00105820
+   end                                                                  00106820
+   if   class /= '' then do           /* has a default class         */ 00107820
+     'CP SPOOL PRT CLASS' class                                         00108820
+   end                                                                  00109820
+   if   dist /= '' then do            /* has a default dist          */ 00110820
+     'CP SPOOL PRT DIST' dist                                           00111820
+   end                                                                  00112820
+return rc                             /* exit                        */ 00115820
+                                                                        00116820
+                                                                        00117820
+                                                                        00118820
+                                                                        00119820
+                                                                        00120820
+                                                                        00121820
+                                                                        00122820
+                                                                        00123820
+                                                                        00124820
+                                                                        00125820
+                                                                        00126820
+                                                                        00127820

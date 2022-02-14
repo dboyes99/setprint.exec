@@ -1,0 +1,12 @@
+TEMPLATE   Build template: Version 5 Last update: 28-Sept-2019                  
+*         SETPRINT TEMPLATE A1 -       01/04/21   14:48:27                      
+METADATA   Customize metadata                                                   
+*         SETPRINT METADATA A1 -       01/04/21   14:52:17                      
+INITIAL    Initial content                                                      
+*         SETPRINT INITIAL  A1 -       01/04/21   17:20:31                      
+DESC       Add support for :desc tag                                            
+*         SETPRINT DESC     A1 -       02/22/21   17:09:43                      
+SHOWLOC    Add :location tag to printer description                             
+*         SETPRINT SHOWLOC  A1 -       03/03/21   15:17:48                      
+LINEUP     Line up output indicators                                            
+*         SETPRINT LINEUP   A1 -       11/11/21   17:36:20                      

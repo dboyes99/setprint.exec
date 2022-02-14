@@ -1,0 +1,4 @@
+LINEUP     Line up output indicators                                            
+SHOWLOC    Add :location tag to printer description                             
+DESC       Add support for :desc tag                                            
+INITIAL    Initial content                                                      

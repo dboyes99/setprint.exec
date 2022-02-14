@@ -1,0 +1,48 @@
+./ *                                                                            
+./ R 00015850          $ 16140 290                    03/03/21 15:17:48         
+/* 2021-03-03    DB             Added :location and :notes. tag      */ 00016140
+/*                                                                   */ 00016430
+./ I 00019820          $ 20320 500                    03/03/21 15:17:48         
+call Set_Variables                    /* configuration vars          */ 00020320
+./ R 00032820          $ 33310 490                    03/03/21 15:17:48         
+/**** Set_defaults                    2021-01-04      SETDEF      ****/ 00033310
+./ I 00042820          $ 42920 100                    03/03/21 15:17:48         
+/*********************************************************************/ 00042920
+/**** Set_Variables                   2021-03-03      SETVAR      ****/ 00043020
+/*********************************************************************/ 00043120
+Set_Variables:                                                          00043220
+  Have_SUPERSAY = 1                   /* is SUPERSAY installed?      */ 00043320
+return RC_OK                          /* exit routine                */ 00043420
+./ R 00045820          $ 46310 490                    03/03/21 15:17:48         
+/**** Check_Verb                      2021-01-04      CHKVRB      ****/ 00046310
+./ R 00062820          $ 63310 490                    03/03/21 15:17:48         
+/**** Check_Printer                   2021-01-04      CHKPRT      ****/ 00063310
+./ I 00072310          $ 72510 200                    03/03/21 15:17:48         
+    ':location :notes' ,                                                00072510
+./ I 00083010          $ 83050 40                     03/03/21 15:17:48         
+ location = result.9                  /* physical location           */ 00083050
+ notes = result.10                    /* any special notes           */ 00083090
+                                                                        00083130
+./ R 00090820          $ 91310 490                    03/03/21 15:17:48         
+/**** Spool_Device                     2021-01-04    SPLDEV       ****/ 00091310
+./ R 00115400          $ 115490 90                    03/03/21 15:17:48         
+/**** Say_New_Output_Location          2021-03-03    SNOL         ****/ 00115490
+./ I 00116270          $ 116290 20                    03/03/21 15:17:48         
+if Have_SUPERSAY = 1 then do          /* make it look nice           */ 00116290
+   msg = "Output will be printed on:" printer                           00116310
+   call SUPERSAY msg ,"YELLOW", 80                                      00116330
+   msg = "Description:" desc                                            00116350
+   call SUPERSAY msg , "GREEN", 80                                      00116370
+   msg = "Location   :" location                                        00116390
+   call SUPERSAY msg , "GREEN", 80                                      00116410
+   if notes ^= '' then do                                               00116430
+      msg = "ATTN:" notes                                               00116450
+      call SUPERSAY msg , "YELLOW" , 80                                 00116470
+   end                                /* if notes                    */ 00116490
+end                                   /* if have_SUPERSAY            */ 00116510
+else do                               /* boring                      */ 00116530
+./ R 00117140          $ 117180 40                    03/03/21 15:17:48         
+say "Location:   " location                                             00117180
+if notes ^= '' then say "ATTN:" notes                                   00117220
+end                                   /* else boring                 */ 00117260
+                                                                        00117300
