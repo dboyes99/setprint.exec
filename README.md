@@ -1,5 +1,6 @@
 # SETPRINT EXEC
-z/VM CMS tool for selecting print destinations by name.  
+z/VM CMS tool for selecting print destinations by name.  The CMS helpfile looks like this:
+
 
 # SETPRINT EXEC
  
